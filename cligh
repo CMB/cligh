@@ -1,0 +1,169 @@
+#!/usr/bin/python
+"""Simple command-line interface to github."""
+# See the file LICENSE for copyright and license info.
+import optparse
+import subprocess
+import sys
+import github2.client
+
+PROGNAME = 'cligh'
+
+# Helper functions.
+
+def print_usage(message):
+	"""Terminate, displaying a help message."""
+	sys.stderr.write('Usage: %s  %s' % ( PROGNAME, message))
+	sys.exit(1)
+
+def print_error(message):
+	"""Display an error message."""
+	sys.stderr.write(message)
+
+def die(message):
+	"""Terminate, displaying an error message."""
+	print_error(message)
+	sys.exit(1)
+
+def read_git_config(key):
+	"""Read a value from git's configuration files."""
+	cmd = ['git', 'config']
+	cmd.append(key)
+	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
+	return output[0].strip()
+
+def get_username_and_token():
+	"""Get the github username and API token."""
+	username = read_git_config('github.user')
+	if not username:
+		die("""Error: unable to determine your github username.
+Please make sure that it is included in the configuration file ~/.gitconfig.
+""")
+
+	token = read_git_config('github.token')
+	if not token:
+		die("""Error: unable to determine your github API token.
+Please make sure that it is included in the configuration file ~/.gitconfig.
+""")
+	return (username, token)
+
+def read_user_input(prompt, validator_func):
+	"""Read and validate user input."""
+	user_text = ''
+	valid_input = False
+	while not valid_input:
+		sys.stdout.write('%s: ' % prompt)
+		sys.stdout.flush()
+		user_text = sys.stdin.readline()
+		if not user_text:
+			die('Could not read input from the user; unable to proceed.')
+		user_text = user_text[0:-1] # Snip off the newline.
+		if validator_func(user_text):
+			valid_input = True
+	return user_text
+
+def add_subcommand_help(usage, subcommands):
+	"""Add names and descriptions of subcommands to a help message."""
+	command_names = subcommands.keys()
+	command_names.sort()
+	for command in command_names:
+		description = subcommands[command][1]
+		usage += '%s - %s\n' % (command, description)
+	return usage
+
+def execute_subcommand(client, args, subcommands, usage):
+	"""Execute a subcommand."""
+	if not args:
+		print_usage(usage)
+	this_subcommand = subcommands.get(args[0], None)
+	if not this_subcommand:
+		print_error('Error: unknown subcommand %s' % (args[0],))
+		print_usage(usage)
+	this_subcommand[0](client, args[1:])
+
+# Repository-related commands.
+def cmd_repo_create(client, args):
+	"""Create a new repository."""
+	usage = """repo create
+Creates a new repository, prompting for details such as name and description.
+"""
+	if len(args) != 0:
+		print_usage(usage)
+
+	def validate_description(text):
+		if len(text) == 0:
+			print 'Description may not be empty.  Try again.'
+			return False
+		return True
+
+	def validate_name(text):
+		if len(text) == 0:
+			print 'Name may not be empty.  Try again.'
+			return False
+		if any(char for char in text if char.isspace()):
+			print 'Name may not contain spaces.  Try again.'
+			return False
+		# What other characters don't belong in the name?
+		return True
+
+	def validate_homepage(text):
+		# This is a lame excuse for validation.
+		if len(text) == 0:
+			print 'Home page may not be empty.  Try again.'
+			return False
+		return True
+
+	name = read_user_input('Repository name', validate_name)
+	homepage = read_user_input('Homepage', validate_homepage)
+	description = read_user_input('Description', validate_description)
+	print client.repos.create(name, description, homepage)
+
+def cmd_repo_fork(client, args):
+	"""Fork a repository."""
+	usage = """repo fork <REPOSITORY_NAME>
+Creates a fork of the repository named REPOSITORY_NAME.
+Example:
+cligh repo fork CMB/cligh
+"""
+	if len(args) != 1:
+		print_usage(usage)
+	print client.repos.fork(args[0])
+
+def cmd_repo_list(client, args):
+	"""Command to list the repos for a given user."""
+	usage = """repo list <USERNAME
+Lists the repositories owned by the user named USERNAME.
+"""
+	if len(args) !=  1:
+		print_usage(usage)
+	repos = client.repos.list(args[0])
+	print '%s has the following repositories:' % args[0]
+	print 'Name - Description'
+	for repo in repos:
+		print '%s - %s' % (repo.name, repo.description)
+
+def cmd_repo(client, args):
+	"""Entry-point for repo-related subcommands."""
+	subcommands = {
+		'create' : (cmd_repo_create, 'Create a new repository'),
+		'fork' : (cmd_repo_fork, 'Fork an existing repository'),
+		'list' : (cmd_repo_list, 'List repositories owned by a given user')
+	}
+	usage = """repo <SUBCOMMAND> [parameters] , where SUBCOMMAND is one of:
+"""
+	usage = add_subcommand_help(usage, subcommands)
+	execute_subcommand(client, args, subcommands, usage)
+
+def main():
+	"""The main function."""
+	args = sys.argv[1:]
+	username, token = get_username_and_token()
+	client = github2.client.Github(username, token)
+	subcommands = {
+		'repo' : (cmd_repo, 'Query and manage repositories.')
+	}
+	usage = '<SUBCOMMAND> [ARGUMENTS] where SUBCOMMAND is one of:\n'
+	usage = add_subcommand_help(usage, subcommands)
+	execute_subcommand(client, args, subcommands, usage)
+
+if __name__ == '__main__':
+	main()
