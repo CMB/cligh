@@ -8,4 +8,5 @@ setup(
 	author='Christopher M. Brannon',
 	author_email='cmbrannon79@gmail.com',
 	license='BSD',
-	scripts=['cligh'])
+	packages=['cligh'],
+	scripts=['bin/cligh'])
