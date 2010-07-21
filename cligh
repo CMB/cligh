@@ -84,6 +84,15 @@ the remote named "origin" must point to github.
 		name = match.group(1)
 	return name
 
+def remove_username(repository):
+	"""Return the name of the repository, without the username.
+Effectively a no-op if the repo name is not of the form username/project."""
+	nameparts = repository.split('/', 1)
+	if len(nameparts) == 1:
+		return nameparts[0]
+	else:
+		return nameparts[1]
+
 # Repository-related commands.
 def cmd_repo_create(client, args):
 	"""Create a new repository."""
@@ -128,11 +137,49 @@ def cmd_repo_list(client, args):
 	for repo in repos:
 		print '%s - %s' % (repo.name, repo.description)
 
+# Commands for managing collaborators.
+def cmd_collab_add(client, args):
+	"""Add a collaborator to a repo."""
+	repository = get_repository_name(args.repository)
+	repository = remove_username(repository)
+	print client.repos.add_collaborator(repository, args.user)
+
+def cmd_collab_remove(client, args):
+	"""Remove a collaborator from a repo."""
+	repository = get_repository_name(args.repository)
+	repository = remove_username(repository)
+	print client.repos.remove_collaborator(repository, args.user)
+
+def cmd_collab_list(client, args):
+	"""List a repository's collaborators."""
+	repository = get_repository_name(args.repository)
+	collaborators = client.repos.list_collaborators(repository)
+	if not collaborators:
+		print 'There are no collaborators for %s.' % repository
+	else:
+		print 'The following people are collaborating on %s:' % \
+			repository
+		for collaborator in collaborators:
+			print collaborator
+
 # Option parsing.
 def make_argument_parser():
 	parser = argparse.ArgumentParser()
 	subparsers = parser.add_subparsers(title='Subcommands')
+	collab = subparsers.add_parser('collab', help='Manage collaborators.')
 	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
+	subparsers = collab.add_subparsers(title='Collaborator-related Subcommands')
+	collab_list = subparsers.add_parser('list', help='List collaborators for a given repository.')
+	collab_list.set_defaults(func=cmd_collab_list)
+	collab_list.add_argument('--repository', help='Name of the repository.')
+	collab_add = subparsers.add_parser('add', help='Add a collaborator to a repository.')
+	collab_add.set_defaults(func=cmd_collab_add)
+	collab_add.add_argument('user', help='Name of the user.')
+	collab_add.add_argument('--repository', help='Name of the repository.')
+	collab_remove = subparsers.add_parser('remove', help='Remove a collaborator from a repository.')
+	collab_remove.set_defaults(func=cmd_collab_remove)
+	collab_remove.add_argument('user', help='Name of the user.')
+	collab_remove.add_argument('--repository', help='Name of the repository.')
 	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
 	repo_list = subparsers.add_parser('list', help='List repositories belonging to a given user.')
 	repo_list.set_defaults(func=cmd_repo_list)
