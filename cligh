@@ -7,15 +7,7 @@ import subprocess
 import sys
 import github2.client
 
-PROGNAME = 'cligh'
-
 # Helper functions.
-
-def print_usage(message):
-	"""Terminate, displaying a help message."""
-	sys.stderr.write('Usage: %s  %s' % ( PROGNAME, message))
-	sys.exit(1)
-
 def print_error(message):
 	"""Display an error message."""
 	sys.stderr.write(message)
