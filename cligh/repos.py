@@ -36,7 +36,7 @@ def cmd_repo_create(client, args):
 
 def cmd_repo_fork(client, args):
 	"""Fork a repository."""
-	print client.repositorys.fork(args.repository)
+	print client.repos.fork(args.repository)
 
 def cmd_repo_list(client, args):
 	"""Command to list the repos for a given user."""
