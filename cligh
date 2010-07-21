@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """Simple command-line interface to github."""
 # See the file LICENSE for copyright and license info.
-import optparse
+import argparse
 import subprocess
 import sys
 import github2.client
@@ -61,33 +61,9 @@ def read_user_input(prompt, validator_func):
 			valid_input = True
 	return user_text
 
-def add_subcommand_help(usage, subcommands):
-	"""Add names and descriptions of subcommands to a help message."""
-	command_names = subcommands.keys()
-	command_names.sort()
-	for command in command_names:
-		description = subcommands[command][1]
-		usage += '%s - %s\n' % (command, description)
-	return usage
-
-def execute_subcommand(client, args, subcommands, usage):
-	"""Execute a subcommand."""
-	if not args:
-		print_usage(usage)
-	this_subcommand = subcommands.get(args[0], None)
-	if not this_subcommand:
-		print_error('Error: unknown subcommand %s' % (args[0],))
-		print_usage(usage)
-	this_subcommand[0](client, args[1:])
-
 # Repository-related commands.
 def cmd_repo_create(client, args):
 	"""Create a new repository."""
-	usage = """repo create
-Creates a new repository, prompting for details such as name and description.
-"""
-	if len(args) != 0:
-		print_usage(usage)
 
 	def validate_description(text):
 		if len(text) == 0:
@@ -119,51 +95,40 @@ Creates a new repository, prompting for details such as name and description.
 
 def cmd_repo_fork(client, args):
 	"""Fork a repository."""
-	usage = """repo fork <REPOSITORY_NAME>
-Creates a fork of the repository named REPOSITORY_NAME.
-Example:
-cligh repo fork CMB/cligh
-"""
-	if len(args) != 1:
-		print_usage(usage)
-	print client.repos.fork(args[0])
+	print client.repositorys.fork(args.repository)
 
 def cmd_repo_list(client, args):
 	"""Command to list the repos for a given user."""
-	usage = """repo list <USERNAME
-Lists the repositories owned by the user named USERNAME.
-"""
-	if len(args) !=  1:
-		print_usage(usage)
-	repos = client.repos.list(args[0])
-	print '%s has the following repositories:' % args[0]
+	repos = client.repos.list(args.user)
+	print '%s has the following repositories:' % args.user
 	print 'Name - Description'
 	for repo in repos:
 		print '%s - %s' % (repo.name, repo.description)
 
-def cmd_repo(client, args):
-	"""Entry-point for repo-related subcommands."""
-	subcommands = {
-		'create' : (cmd_repo_create, 'Create a new repository'),
-		'fork' : (cmd_repo_fork, 'Fork an existing repository'),
-		'list' : (cmd_repo_list, 'List repositories owned by a given user')
-	}
-	usage = """repo <SUBCOMMAND> [parameters] , where SUBCOMMAND is one of:
-"""
-	usage = add_subcommand_help(usage, subcommands)
-	execute_subcommand(client, args, subcommands, usage)
+# Option parsing.
+def make_argument_parser():
+	parser = argparse.ArgumentParser()
+	subparsers = parser.add_subparsers(title='Subcommands')
+	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
+	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
+	repo_list = subparsers.add_parser('list', help='List repositories belonging to a given user.')
+	repo_list.set_defaults(func=cmd_repo_list)
+	repo_list.add_argument('user')
+	repo_create = subparsers.add_parser('create', help='Create a new repository.')
+	repo_create.set_defaults(func=cmd_repo_create)
+	repo_create.add_argument('repository')
+	repo_fork = subparsers.add_parser('fork', help='Fork an existing repository.')
+	repo_fork.set_defaults(func=cmd_repo_fork)
+	repo_fork.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
+	return parser
 
 def main():
 	"""The main function."""
-	args = sys.argv[1:]
 	username, token = get_username_and_token()
 	client = github2.client.Github(username, token)
-	subcommands = {
-		'repo' : (cmd_repo, 'Query and manage repositories.')
-	}
-	usage = '<SUBCOMMAND> [ARGUMENTS] where SUBCOMMAND is one of:\n'
-	usage = add_subcommand_help(usage, subcommands)
-	execute_subcommand(client, args, subcommands, usage)
+	parser = make_argument_parser()
+	args = parser.parse_args()
+ 	args.func(client, args)
 
 if __name__ == '__main__':
 	main()

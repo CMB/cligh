@@ -5,14 +5,21 @@ It is written by Christopher Brannon <cmbrannon79@gmail.com>.
 
 ## Installation
 
-First, you need to install the python-github2 package.
-Its homepage is [here](http://github.com/ask/python-github2).
-Next, type `./setup.py` in the cligh source directory, in order to install
+If you are using a version of Python prior to 2.7, you first need to
+install the argparse module.
+Get it from [here](http://argparse.googlecode.com/).
+Python version 2.7 includes argparse in its standard library.
+
+cligh also requires the python-github2 package.
+The homepage for python-github2 is [here](http://github.com/ask/python-github2).
+
+Once the dependencies are installed,
+ type `./setup.py` in the cligh source directory, in order to install
 the script.
 
 ## Usage
 
 Usage is straightforward, and the program provides informative help
-messages.  Simply type `cligh` at a shell prompt,
+messages.  Simply type `cligh -h` at a shell prompt,
 to see the introductory help message.
 
