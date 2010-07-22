@@ -3,7 +3,7 @@
 
 from cligh.utils import read_user_input
 
-def cmd_repo_create(client, args):
+def create(client, args):
 	"""Create a new repository."""
 
 	def validate_description(text):
@@ -34,11 +34,11 @@ def cmd_repo_create(client, args):
 	description = read_user_input('Description', validate_description)
 	print client.repos.create(name, description, homepage)
 
-def cmd_repo_fork(client, args):
+def fork(client, args):
 	"""Fork a repository."""
 	print client.repos.fork(args.repository)
 
-def cmd_repo_list(client, args):
+def do_list(client, args):
 	"""Command to list the repos for a given user."""
 	repos = client.repos.list(args.user)
 	print '%s has the following repositories:' % args.user
@@ -50,10 +50,10 @@ def make_repo_parser(subparsers):
 	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
 	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
 	repo_list = subparsers.add_parser('list', help='List repositories belonging to a given user.')
-	repo_list.set_defaults(func=cmd_repo_list)
+	repo_list.set_defaults(func=do_list)
 	repo_list.add_argument('user')
 	repo_create = subparsers.add_parser('create', help='Create a new repository.')
-	repo_create.set_defaults(func=cmd_repo_create)
+	repo_create.set_defaults(func=create)
 	repo_fork = subparsers.add_parser('fork', help='Fork an existing repository.')
-	repo_fork.set_defaults(func=cmd_repo_fork)
+	repo_fork.set_defaults(func=fork)
 	repo_fork.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
