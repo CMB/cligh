@@ -6,6 +6,7 @@ import argparse
 import github2.client
 
 from cligh.collaborators import make_collab_parser
+from cligh.issues import make_issue_parser
 from cligh.repos import make_repo_parser
 from cligh.utils import get_username_and_token
 
@@ -14,6 +15,7 @@ def make_argument_parser():
 	parser = argparse.ArgumentParser()
 	subparsers = parser.add_subparsers(title='Subcommands')
 	make_collab_parser(subparsers)
+	make_issue_parser(subparsers)
 	make_repo_parser(subparsers)
 	return parser
 

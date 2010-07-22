@@ -1,7 +1,10 @@
 #!/usr/bin/python
+import os
+import os.path
 import re
 import subprocess
 import sys
+import tempfile
 
 # Helper functions.
 def print_error(message):
@@ -80,3 +83,49 @@ Effectively a no-op if the repo name is not of the form username/project."""
 		return nameparts[0]
 	else:
 		return nameparts[1]
+
+def find_executable(executable):
+	path = os.environ['PATH'].split(os.pathsep)
+	for subdirectory in path:
+		tryname = os.path.join(subdirectory, executable)
+		if os.access(tryname, os.X_OK):
+			return tryname
+	return None
+
+def choose_editor():
+	if os.environ.has_key('EDITOR'):
+		editor =  os.environ['EDITOR']
+	else:
+		print_error('$EDITOR not set, assuming default of vi.')
+		editor = find_executable('vi')
+	if not editor:
+		die(
+"""Error: cannot continue with the current command, because the text
+editor could not be found.  Please set your EDITOR environment variable
+to the pathname of your preferred editor.
+""")
+	return editor
+
+def text_from_editor(original_text=''):
+	"""Allow a user to compose a text using his editor of choice."""
+	text = ''
+	editor_cmd = choose_editor()
+	my_tempfile = None
+	try:
+		my_tempfile = tempfile.NamedTemporaryFile(delete=False)
+		if original_text:
+			my_tempfile.write(original_text)
+			my_tempfile.flush()
+			my_tempfile.seek(0) # And go back to the beginning.
+		editor_status = subprocess.call([editor_cmd, my_tempfile.name])
+		if editor_status != 0:
+			die(
+"""Error: the text editor did not complete successfully.  Unable to continue.
+""")
+		text = my_tempfile.read()
+	finally:
+		if my_tempfile:
+			my_tempfile.close()
+			os.unlink(my_tempfile.name)
+	return text
+
