@@ -5,37 +5,16 @@ import argparse
 
 import github2.client
 
-from cligh.collaborators import cmd_collab_add, cmd_collab_list, cmd_collab_remove
-from cligh.repos import cmd_repo_create, cmd_repo_fork, cmd_repo_list 
+from cligh.collaborators import make_collab_parser
+from cligh.repos import make_repo_parser
 from cligh.utils import get_username_and_token
 
 # Option parsing.
 def make_argument_parser():
 	parser = argparse.ArgumentParser()
 	subparsers = parser.add_subparsers(title='Subcommands')
-	collab = subparsers.add_parser('collab', help='Manage collaborators.')
-	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
-	subparsers = collab.add_subparsers(title='Collaborator-related Subcommands')
-	collab_list = subparsers.add_parser('list', help='List collaborators for a given repository.')
-	collab_list.set_defaults(func=cmd_collab_list)
-	collab_list.add_argument('--repository', help='Name of the repository.')
-	collab_add = subparsers.add_parser('add', help='Add a collaborator to a repository.')
-	collab_add.set_defaults(func=cmd_collab_add)
-	collab_add.add_argument('user', help='Name of the user.')
-	collab_add.add_argument('--repository', help='Name of the repository.')
-	collab_remove = subparsers.add_parser('remove', help='Remove a collaborator from a repository.')
-	collab_remove.set_defaults(func=cmd_collab_remove)
-	collab_remove.add_argument('user', help='Name of the user.')
-	collab_remove.add_argument('--repository', help='Name of the repository.')
-	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
-	repo_list = subparsers.add_parser('list', help='List repositories belonging to a given user.')
-	repo_list.set_defaults(func=cmd_repo_list)
-	repo_list.add_argument('user')
-	repo_create = subparsers.add_parser('create', help='Create a new repository.')
-	repo_create.set_defaults(func=cmd_repo_create)
-	repo_fork = subparsers.add_parser('fork', help='Fork an existing repository.')
-	repo_fork.set_defaults(func=cmd_repo_fork)
-	repo_fork.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
+	make_collab_parser(subparsers)
+	make_repo_parser(subparsers)
 	return parser
 
 def main():

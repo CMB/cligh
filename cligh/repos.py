@@ -45,3 +45,15 @@ def cmd_repo_list(client, args):
 	print 'Name - Description'
 	for repo in repos:
 		print '%s - %s' % (repo.name, repo.description)
+
+def make_repo_parser(subparsers):
+	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
+	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
+	repo_list = subparsers.add_parser('list', help='List repositories belonging to a given user.')
+	repo_list.set_defaults(func=cmd_repo_list)
+	repo_list.add_argument('user')
+	repo_create = subparsers.add_parser('create', help='Create a new repository.')
+	repo_create.set_defaults(func=cmd_repo_create)
+	repo_fork = subparsers.add_parser('fork', help='Fork an existing repository.')
+	repo_fork.set_defaults(func=cmd_repo_fork)
+	repo_fork.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
