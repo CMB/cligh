@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Repository-related commands.
 
-from cligh.utils import read_user_input
+from cligh.utils import get_working_repo, read_user_input
 
 def create(client, args):
 	"""Create a new repository."""
@@ -32,19 +32,48 @@ def create(client, args):
 	name = read_user_input('Repository name', validate_name)
 	homepage = read_user_input('Homepage', validate_homepage)
 	description = read_user_input('Description', validate_description)
-	print client.repos.create(name, description, homepage)
+	user = client.get_user()
+	print client.get_user().create_repo(name=name, description=description, homepage=homepage)
 
 def fork(client, args):
 	"""Fork a repository."""
-	print client.repos.fork(args.repository)
+	repo_to_fork = get_working_repo(client, args.repository)
+	client.get_user().create_fork(repo_to_fork)
+	print 'Repository forked.'
 
 def do_list(client, args):
 	"""Command to list the repos for a given user."""
-	repos = client.repos.list(args.user)
+	user = client.get_user(args.user)
+	repos = user.get_repos()
 	print '%s has the following repositories:' % args.user
 	print 'Name - Description'
 	for repo in repos:
 		print '%s - %s' % (repo.name, repo.description)
+
+def addlabel(client, args):
+	# xxx Make this configurable by the user.  White is a sane
+	# default, for now.
+	color = 'ffffff'
+	repository = get_working_repo(client, args.repository)
+	try:
+		repository.create_label(args.label, color)
+	except GithubException as e:
+		die('''Unable to create label %s.
+The complete error response was:
+%s
+''' % (args.label, e.data))
+	print 'Label added.'
+
+def remlabel(client, args):
+	repository = get_working_repo(client, args.repository)
+	try:
+		label = repository.get_label(args.label)
+		label.delete()
+	except GithubException as e:
+		die('''Unable to delete label %s from this repository.
+Error message: %s
+''' % (args.label, e.data['message']))
+	print 'Label removed.'
 
 def make_repo_parser(subparsers):
 	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
@@ -57,3 +86,11 @@ def make_repo_parser(subparsers):
 	repo_fork = subparsers.add_parser('fork', help='Fork an existing repository.')
 	repo_fork.set_defaults(func=fork)
 	repo_fork.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
+	repo_addlabel = subparsers.add_parser('add_label', help='Add a label to a repository.')
+	repo_addlabel.set_defaults(func=addlabel)
+	repo_addlabel.add_argument('--repository', help='Name of the repository, in the form USERNAME/REPONAME')
+	repo_addlabel.add_argument('label', help='Name of the label to add')
+	repo_remlabel = subparsers.add_parser('remove_label', help='Remove a label from a repository.')
+	repo_remlabel.set_defaults(func=remlabel)
+	repo_remlabel.add_argument('--repository', help='Name of the repository, in the form USERNAME/REPONAME')
+	repo_remlabel.add_argument('label', help='Name of the label to remove')

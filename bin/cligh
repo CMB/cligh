@@ -3,29 +3,32 @@
 # See the file LICENSE for copyright and license info.
 import argparse
 
-import github2.client
+from github import Github
 
+from cligh import config
 from cligh.collaborators import make_collab_parser
 from cligh.issues import make_issue_parser
 from cligh.repos import make_repo_parser
-from cligh.utils import get_username_and_token
 
 # Option parsing.
 def make_argument_parser():
 	parser = argparse.ArgumentParser()
 	subparsers = parser.add_subparsers(title='Subcommands')
+	config.make_configcmd_parser(subparsers)
 	make_collab_parser(subparsers)
 	make_issue_parser(subparsers)
 	make_repo_parser(subparsers)
 	return parser
 
 def main():
-	"""The main function."""
-	username, token = get_username_and_token()
-	client = github2.client.Github(username, token)
 	parser = make_argument_parser()
 	args = parser.parse_args()
- 	args.func(client, args)
+	if args.func == config.do_configcmd:
+		config.do_configcmd()
+	else:
+		config.read_config_file()
+		client = Github(config.get_token())
+		args.func(client, args)
 
 if __name__ == '__main__':
 	main()

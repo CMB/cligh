@@ -23,21 +23,6 @@ def read_git_config(key):
 	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
 	return output[0].strip()
 
-def get_username_and_token():
-	"""Get the github username and API token."""
-	username = read_git_config('github.user')
-	if not username:
-		die("""Error: unable to determine your github username.
-Please make sure that it is included in the configuration file ~/.gitconfig.
-""")
-
-	token = read_git_config('github.token')
-	if not token:
-		die("""Error: unable to determine your github API token.
-Please make sure that it is included in the configuration file ~/.gitconfig.
-""")
-	return (username, token)
-
 def read_user_input(prompt, validator_func):
 	"""Read and validate user input."""
 	user_text = ''
@@ -75,14 +60,35 @@ the remote named "origin" must point to github.
 		name = match.group(1)
 	return name
 
-def remove_username(repository):
-	"""Return the name of the repository, without the username.
-Effectively a no-op if the repo name is not of the form username/project."""
+def split_repo_name(repository):
+	"""Take a string of the form user/repo, and return the tuple
+(user, repo).  If the string does not contain the username, then just
+return None for the user."""
 	nameparts = repository.split('/', 1)
 	if len(nameparts) == 1:
-		return nameparts[0]
+		return (None, nameparts[0])
 	else:
-		return nameparts[1]
+		return (nameparts[0], nameparts[1])
+
+def get_working_repo(client, full_reponame):
+	full_reponame = get_repository_name(full_reponame)
+	username, reponame = split_repo_name(full_reponame)
+	if username:
+		user = client.get_user(username)
+	else:
+		user = client.get_user()
+	repository = user.get_repo(reponame)
+	return repository
+
+def get_named_user(client, username):
+	try:
+		user = client.get_user(username)
+	except GithubException as e:
+		die('''Failed to retrieve the record for user %s:
+Encountered the following exception:
+%s
+''' % (username, str(e)))
+	return user
 
 def find_executable(executable):
 	path = os.environ['PATH'].split(os.pathsep)

@@ -21,8 +21,11 @@ install the argparse module.
 Get it from [here](http://argparse.googlecode.com/).
 Python version 2.7 includes argparse in its standard library.
 
-cligh also requires the python-github2 package.
-The homepage for python-github2 is [here](http://github.com/ask/python-github2).
+cligh also requires the PyGithub package.
+The homepage for PyGithub is [https://github.com/jacquev6/PyGithub](https://github.com/jacquev6/PyGithub).
+
+The final dependency is PyXDG.
+Get it from [http://freedesktop.org/Software/pyxdg](http://freedesktop.org/Software/pyxdg).
 
 Once the dependencies are installed,
  type `./setup.py` in the cligh source directory, in order to install
