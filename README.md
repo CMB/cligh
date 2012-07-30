@@ -33,16 +33,15 @@ the script.
 
 ## Setup
 
-cligh will read your username and github token from git's configuration files,
-so you must set them before proceeding.
-These authenticate various operations, such as repository creation.
-See [this description of the configuration process](http://help.github.com/git-email-settings)
-for more details.
-Here are the example commands which you should run, replacing the final
-arguments with your own username and token.
+Run the following command to configure cligh:
 
-    git config --global github.user NoSuchUser
-    git config --global github.token 0123456789abcdef0123456789abcdef
+    cligh configure
+
+The program will prompt you for a username and password.  It then creates
+an authorization using the Github API.
+cligh never stores your password.  Instead, it stores the token associated
+with the authorization that it created.
+It uses this token to authenticate to Github.
 
 ## Usage
 
