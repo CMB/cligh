@@ -68,7 +68,7 @@ file.  Should be called the first time the application is executed."""
 	password = getpass.getpass('Password:')
 	client = Github(username, password)
 	user = client.get_user()
-	authorization = user.create_authorization(scopes=['user', 'repo', 'gists', 'delete_repo'], note='cligh', note_url='https://github.com/CMB/cligh')
+	authorization = user.create_authorization(scopes=['user', 'repo', 'gist', 'delete_repo'], note='cligh', note_url='https://github.com/CMB/cligh')
 	config_parser = ConfigParser.ConfigParser()
 	config_parser.add_section('credentials')
 	config_parser.set('credentials', 'username', username)
