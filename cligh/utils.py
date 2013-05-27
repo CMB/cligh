@@ -45,7 +45,13 @@ we try to detect the repository's name by looking at remote.origin.url."""
 
 	if not name:
 		name = read_git_config('remote.origin.url')
-		match = re.match(r'git@github.com:(.*)\.git$', name)
+		match = re.match(r'''(?x)
+			(?:git@github.com:     # ssh
+			|https://github.com/)  # https
+			(.+)                   # user/repo
+			(?:\.git               # optional extension
+			|(?<!\.git))           # anything but extension
+			$''', name)
 		if not match:
 			die(
 """This command expects a repository name, but the name is unknown.
