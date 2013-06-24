@@ -28,7 +28,7 @@ The final dependency is PyXDG.
 Get it from [http://freedesktop.org/Software/pyxdg](http://freedesktop.org/Software/pyxdg).
 
 Once the dependencies are installed,
- type `./setup.py` in the cligh source directory, in order to install
+ type `./setup.py install` in the cligh source directory, in order to install
 the script.
 
 ## Setup
