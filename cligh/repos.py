@@ -32,7 +32,6 @@ def create(client, args):
 	name = read_user_input('Repository name', validate_name)
 	homepage = read_user_input('Homepage', validate_homepage)
 	description = read_user_input('Description', validate_description)
-	user = client.get_user()
 	print client.get_user().create_repo(name=name, description=description, homepage=homepage)
 
 def fork(client, args):
