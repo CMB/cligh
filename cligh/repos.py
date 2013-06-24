@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # Repository-related commands.
 
-from cligh.utils import get_working_repo, read_user_input
+from cligh.utils import get_working_repo, read_user_input, die
+from github import GithubException
 
 def create(client, args):
 	"""Create a new repository."""
