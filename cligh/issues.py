@@ -18,7 +18,7 @@ a repository name and issue number."""
 	try:
 		issue = repository.get_issue(issue_number)
 	except GithubException as e:
-		die('Unable to fetch issue number %d for this repository: %s' % (args.number, e.data['message']))
+		die('Unable to fetch issue number %d for this repository: %s' % (issue_number, e.data['message']))
 	return issue
 
 def print_enclosed_text(text):
