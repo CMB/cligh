@@ -9,6 +9,8 @@ import tempfile
 # Helper functions.
 def print_error(message):
 	"""Display an error message."""
+	if not message.endswith('\n'):
+		message += '\n'
 	sys.stderr.write(message)
 
 def die(message):
