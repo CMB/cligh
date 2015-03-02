@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # Commands for managing collaborators.
 
 from . import utils
