@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import getpass
 import os
 from github import Github
@@ -30,12 +30,12 @@ def get_config_filename():
 
 def read_config_file():
 	global USERNAME, TOKEN
-	config_parser = ConfigParser.ConfigParser()
+	config_parser = configparser.ConfigParser()
 	config_filename = get_config_filename()
 	try:
 		with open(config_filename, 'r') as f:
 			config_parser.readfp(f)
-	except ConfigParser.Error as e:
+	except configparser.Error as e:
 		utils.die("""The following error was encountered while attempting to parse the configuration file.
 %s
 This may indicate a mal-formed configuration file.
@@ -53,7 +53,7 @@ at your shell prompt.
 	try:
 		USERNAME = config_parser.get('credentials', 'username')
 		TOKEN = config_parser.get('credentials', 'token')
-	except ConfigParser.Error as e:
+	except configparser.Error as e:
 		utils.die("""The config file is missing one or more expected options.
 You should probably recreate it using these two commands:
 rm %s
@@ -69,14 +69,14 @@ file.  Should be called the first time the application is executed."""
 	client = Github(username, password)
 	user = client.get_user()
 	authorization = user.create_authorization(scopes=['user', 'repo', 'gist', 'delete_repo'], note='cligh', note_url='https://github.com/CMB/cligh')
-	config_parser = ConfigParser.ConfigParser()
+	config_parser = configparser.ConfigParser()
 	config_parser.add_section('credentials')
 	config_parser.set('credentials', 'username', username)
 	config_parser.set('credentials', 'token', authorization.token)
-	os.umask(077) # Want permissions of 0600.
+	os.umask(0o77) # Want permissions of 0600.
 	with open(get_config_filename(), 'w') as f:
 		config_parser.write(f)
-	print 'cligh configured and authorized for use with github.'
+	print('cligh configured and authorized for use with github.')
 
 def make_configcmd_parser(subparsers):
 	configcmd = subparsers.add_parser('configure', help='Configure cligh.')

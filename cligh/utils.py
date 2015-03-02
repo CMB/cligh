@@ -1,4 +1,4 @@
-#!/usr/bin/python
+import locale
 import os
 import os.path
 import re
@@ -23,7 +23,8 @@ def read_git_config(key):
 	cmd = ['git', 'config']
 	cmd.append(key)
 	output = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
-	return output[0].strip()
+	encoding = locale.getpreferredencoding(False)
+	return output[0].strip().decode(encoding)
 
 def read_user_input(prompt, validator_func):
 	"""Read and validate user input."""
@@ -107,7 +108,7 @@ def find_executable(executable):
 	return None
 
 def choose_editor():
-	if os.environ.has_key('EDITOR'):
+	if 'EDITOR' in os.environ:
 		editor =  os.environ['EDITOR']
 	else:
 		print_error('$EDITOR not set, assuming default of vi.')
@@ -126,7 +127,7 @@ def text_from_editor(original_text=''):
 	editor_cmd = choose_editor()
 	my_tempfile = None
 	try:
-		my_tempfile = tempfile.NamedTemporaryFile(delete=False)
+		my_tempfile = tempfile.NamedTemporaryFile(delete=False, mode='w+')
 		if original_text:
 			my_tempfile.write(original_text)
 			my_tempfile.flush()

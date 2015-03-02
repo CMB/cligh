@@ -16,13 +16,10 @@ You can verify the integrity of the file using the
 
 ## Installation
 
-If you are using a version of Python prior to 2.7, you first need to
-install the argparse module.
-Get it from [here](http://argparse.googlecode.com/), or install it using
-`pip install argparse`.
-Python version 2.7 includes argparse in its standard library.
+This program is written in Python 3.x.
+There is no backward compatibility with 2.x, since 3.x is the future.
 
-cligh also requires the PyGithub package.
+cligh requires the PyGithub package.
 The homepage for PyGithub is
 [https://github.com/jacquev6/PyGithub](https://github.com/jacquev6/PyGithub).
 It can also be installed using `pip install PyGithub`.
@@ -34,7 +31,7 @@ or install it using `pip install pyxdg`.
 
 Once the dependencies are installed,
  type `./setup.py install` in the cligh source directory, in order to install
-the script.
+the script and its helper modules.
 
 ## Setup
 

@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """Commands for managing and querying issues."""
 
 from github import GithubException
@@ -23,22 +22,22 @@ a repository name and issue number."""
 
 def print_enclosed_text(text):
 	"""Print some text, enclosed by horizontal lines."""
-	print '-' * 80
-	print text
-	print '-' * 80
-	print
+	print('-' * 80)
+	print(text)
+	print('-' * 80)
+	print()
 
 def print_comment(comment):
-	print 'Comment by %s on %s at %s' % (comment.user.login,
+	print('Comment by %s on %s at %s' % (comment.user.login,
 		comment.created_at.date(),
-		comment.created_at.strftime('%H:%M:%S'))
+		comment.created_at.strftime('%H:%M:%S')))
 	print_enclosed_text(comment.body)
 
 def do_open(client, args):
 	"""Create a new issue."""
 	repository = get_working_repo(client, args.repository)
-	print 'Please enter the long description for this issue.'
-	print 'Starting your text editor:'
+	print('Please enter the long description for this issue.')
+	print('Starting your text editor:')
 	desc_text = text_from_editor()
 	repository.create_issue(args.title, body=desc_text)
 
@@ -53,38 +52,38 @@ def do_list(client, args):
 	status = args.status or 'open'
 	issues = list(repository.get_issues(state=status))
 	if not issues:
-		print '%s has no %s issues' % (repository.full_name, status)
+		print('%s has no %s issues' % (repository.full_name, status))
 	else:
-		print '%s has the following %s issues' % (repository.full_name, status)
-		print 'Issue# - Title'
+		print('%s has the following %s issues' % (repository.full_name, status))
+		print('Issue# - Title')
 	for issue in issues:
-		print '%s - %s' % (issue.number, issue.title)
+		print('%s - %s' % (issue.number, issue.title))
 
 def get(client, args):
 	issue = get_working_issue(client, args)
 	comments = issue.get_comments()
-	print 'Issue #%d: %s' % (issue.number, issue.title)
-	print 'Opened by %s on %s at %s' % (issue.user.login,
-		issue.created_at.date(), issue.created_at.strftime('%H:%M:%S'))
-	print 'Last updated on %s at %s' % (issue.updated_at.date(),
-		issue.updated_at.strftime('%H:%M:%S'))
+	print('Issue #%d: %s' % (issue.number, issue.title))
+	print('Opened by %s on %s at %s' % (issue.user.login,
+		issue.created_at.date(), issue.created_at.strftime('%H:%M:%S')))
+	print('Last updated on %s at %s' % (issue.updated_at.date(),
+		issue.updated_at.strftime('%H:%M:%S')))
 	if issue.closed_by and issue.closed_at:
-		print "Closed by %s on %s at %s" % (issue.closed_by.login,
-		issue.closed_at.date(), issue.closed_at.strftime('%H:%M:%S'))
+		print("Closed by %s on %s at %s" % (issue.closed_by.login,
+		issue.closed_at.date(), issue.closed_at.strftime('%H:%M:%S')))
 	if issue.labels:
-		print 'Labels:'
+		print('Labels:')
 		for label in issue.labels:
-			print '* %s' % label.name
-	print 'Long description:'
+			print('* %s' % label.name)
+	print('Long description:')
 	print_enclosed_text(issue.body)
-	print 'Comments:'
-	print
+	print('Comments:')
+	print()
 	for comment in comments:
 		print_comment(comment)
 
 def comment(client, args):
 	issue = get_working_issue(client, args)
-	print 'Starting your text editor, so that you can compose your comment:'
+	print('Starting your text editor, so that you can compose your comment:')
 	comment_text = text_from_editor()
 	issue.create_comment(comment_text)
 
@@ -122,6 +121,8 @@ Error message: %s
 def make_issue_parser(subparsers):
 	issue = subparsers.add_parser('issue', help='Manage and query issues.')
 	subparsers = issue.add_subparsers(title='Issue-related subcommands.')
+	subparsers.required = True
+	subparsers.dest = 'issue_command'
 
 	issue_list = subparsers.add_parser('list', help='List issues for a given repository.')
 	issue_list.set_defaults(func=do_list)
