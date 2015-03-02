@@ -107,7 +107,7 @@ def find_executable(executable):
 	return None
 
 def choose_editor():
-	if os.environ.has_key('EDITOR'):
+	if 'EDITOR' in os.environ:
 		editor =  os.environ['EDITOR']
 	else:
 		print_error('$EDITOR not set, assuming default of vi.')

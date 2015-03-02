@@ -9,16 +9,16 @@ def create(client, args):
 
 	def validate_description(text):
 		if len(text) == 0:
-			print 'Description may not be empty.  Try again.'
+			print('Description may not be empty.  Try again.')
 			return False
 		return True
 
 	def validate_name(text):
 		if len(text) == 0:
-			print 'Name may not be empty.  Try again.'
+			print('Name may not be empty.  Try again.')
 			return False
 		if any(char for char in text if char.isspace()):
-			print 'Name may not contain spaces.  Try again.'
+			print('Name may not contain spaces.  Try again.')
 			return False
 		# What other characters don't belong in the name?
 		return True
@@ -26,29 +26,29 @@ def create(client, args):
 	def validate_homepage(text):
 		# This is a lame excuse for validation.
 		if len(text) == 0:
-			print 'Home page may not be empty.  Try again.'
+			print('Home page may not be empty.  Try again.')
 			return False
 		return True
 
 	name = read_user_input('Repository name', validate_name)
 	homepage = read_user_input('Homepage', validate_homepage)
 	description = read_user_input('Description', validate_description)
-	print client.get_user().create_repo(name=name, description=description, homepage=homepage)
+	print(client.get_user().create_repo(name=name, description=description, homepage=homepage))
 
 def fork(client, args):
 	"""Fork a repository."""
 	repo_to_fork = get_working_repo(client, args.repository)
 	client.get_user().create_fork(repo_to_fork)
-	print 'Repository forked.'
+	print('Repository forked.')
 
 def do_list(client, args):
 	"""Command to list the repos for a given user."""
 	user = client.get_user(args.user)
 	repos = user.get_repos()
-	print '%s has the following repositories:' % args.user
-	print 'Name - Description'
+	print('%s has the following repositories:' % args.user)
+	print('Name - Description')
 	for repo in repos:
-		print '%s - %s' % (repo.name, repo.description)
+		print('%s - %s' % (repo.name, repo.description))
 
 def addlabel(client, args):
 	# xxx Make this configurable by the user.  White is a sane
@@ -62,7 +62,7 @@ def addlabel(client, args):
 The complete error response was:
 %s
 ''' % (args.label, e.data))
-	print 'Label added.'
+	print('Label added.')
 
 def remlabel(client, args):
 	repository = get_working_repo(client, args.repository)
@@ -73,7 +73,7 @@ def remlabel(client, args):
 		die('''Unable to delete label %s from this repository.
 Error message: %s
 ''' % (args.label, e.data['message']))
-	print 'Label removed.'
+	print('Label removed.')
 
 def make_repo_parser(subparsers):
 	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
