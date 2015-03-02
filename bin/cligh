@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 """Simple command-line interface to github."""
 # See the file LICENSE for copyright and license info.
 import argparse

@@ -1,4 +1,3 @@
-#!/usr/bin/python
 """Commands for managing and querying issues."""
 
 from github import GithubException
