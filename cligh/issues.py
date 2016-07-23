@@ -13,7 +13,7 @@ a repository name and issue number."""
 	try:
 		issue_number = int(args.number)
 	except ValueError:
-		die("""%s is not a valid issue number.""")
+		die("""%s is not a valid issue number.""" % args.number)
 	try:
 		issue = repository.get_issue(issue_number)
 	except GithubException as e:
