@@ -50,6 +50,7 @@ we try to detect the repository's name by looking at remote.origin.url."""
 		name = read_git_config('remote.origin.url')
 		match = re.match(r'''(?x)
 			(?:git@github.com:     # ssh
+			|git://github.com/ # git protocol
 			|https://github.com/)  # https
 			(.+)                   # user/repo
 			(?:\.git               # optional extension
