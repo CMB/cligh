@@ -2,7 +2,8 @@
 
 This is a simple command-line interface to the facilities of GitHub.
 It is written by Christopher Brannon <chris@the-brannons.com>.
-The current version is 0.2.
+The current version is 0.3,
+released July 23, 2016.
 This program is still in the early stage of development.
 It is by no means feature-complete.
 A friend and I consider it useful, but others may not.
@@ -10,9 +11,9 @@ A friend and I consider it useful, but others may not.
 ## Obtaining
 
 Obtain the current stable version using this link:
-<http://the-brannons.com/software/cligh-0.2.tar.gz>.
+<http://the-brannons.com/software/cligh-0.3.tar.gz>.
 You can verify the integrity of the file using the
-[gpg signature](http://the-brannons.com/software/cligh-0.2.tar.gz.sig).
+[gpg signature](http://the-brannons.com/software/cligh-0.3.tar.gz.sig).
 
 ## Installation
 
