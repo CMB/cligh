@@ -32,7 +32,8 @@ def create(client, args):
 	name = read_user_input('Repository name', validate_name)
 	homepage = read_user_input('Homepage', validate_homepage)
 	description = read_user_input('Description', validate_description)
-	print(client.get_user().create_repo(name=name, description=description, homepage=homepage))
+	repo = client.get_user().create_repo(name=name, description=description, homepage=homepage)
+	print(repo.clone_url)
 
 def fork(client, args):
 	"""Fork a repository."""
