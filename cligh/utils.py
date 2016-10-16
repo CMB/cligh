@@ -6,6 +6,8 @@ import subprocess
 import sys
 import tempfile
 
+from github import GithubException
+
 # Helper functions.
 def print_error(message):
 	"""Display an error message."""
