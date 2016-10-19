@@ -75,6 +75,12 @@ Error message: %s
 ''' % (args.label, e.data['message']))
 	print('Label removed.')
 
+def delete(client, args):
+	"""Delete a repository."""
+	repository = get_working_repo(client, args.repository)
+	repository.delete()
+	print('Repository %s deleted.' % repository.full_name)
+
 def make_repo_parser(subparsers):
 	repo = subparsers.add_parser('repo', help='Manage and query repositories.')
 	subparsers = repo.add_subparsers(title='Repository-related Subcommands')
@@ -96,3 +102,6 @@ def make_repo_parser(subparsers):
 	repo_remlabel.set_defaults(func=remlabel)
 	repo_remlabel.add_argument('--repository', help='Name of the repository, in the form USERNAME/REPONAME')
 	repo_remlabel.add_argument('label', help='Name of the label to remove')
+	repo_delete = subparsers.add_parser('delete', help='Delete a repository.')
+	repo_delete.set_defaults(func=delete)
+	repo_delete.add_argument('repository', help='Name of the repository, in the form USERNAME/REPONAME')
