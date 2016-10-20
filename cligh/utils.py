@@ -38,7 +38,7 @@ def read_user_input(prompt, validator_func):
 		user_text = sys.stdin.readline()
 		if not user_text:
 			die('Could not read input from the user; unable to proceed.')
-		user_text = user_text[0:-1] # Snip off the newline.
+		user_text = user_text.rstrip('\r\n') # Snip NL / CR.
 		if validator_func(user_text):
 			valid_input = True
 	return user_text
