@@ -58,6 +58,6 @@ The source for this project is managed by git.  If you wish to contribute,
 or if you simply wish to use the unpublished "development" sources, clone
 it using a command such as the following:
 
-    git clone git://github.com/CMB/cligh.git
+    git clone https://github.com/CMB/cligh.git
 
 Patches are most appreciated.  Please send them to [chris@the-brannons.com](mailto:chris@the-brannons.com).
