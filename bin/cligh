@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Simple command-line interface to github."""
 # See the file LICENSE for copyright and license info.
+__author__ = "Chris Brannon <chris@the-brannons.com>"
+__copyright__ = "See the file LICENSE for copyright and license info"
+__license__ = "See the file LICENSE for copyright and license info"
+__version__ = "0.3.2"
+__maintainer__ = "Emmanuel Arias <eamanu@eamanu.com>"
+__email__ = "chris@the-brannons.com, eamanu@eamanu.com"
+
 import argparse
 
 from github import Github
@@ -10,27 +17,30 @@ from cligh.collaborators import make_collab_parser
 from cligh.issues import make_issue_parser
 from cligh.repos import make_repo_parser
 
+
 # Option parsing.
 def make_argument_parser():
-	parser = argparse.ArgumentParser()
-	subparsers = parser.add_subparsers(title='Subcommands')
-	subparsers.required = True
-	subparsers.dest = 'command'
-	config.make_configcmd_parser(subparsers)
-	make_collab_parser(subparsers)
-	make_issue_parser(subparsers)
-	make_repo_parser(subparsers)
-	return parser
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers(title='Subcommands')
+    subparsers.required = True
+    subparsers.dest = 'command'
+    config.make_configcmd_parser(subparsers)
+    make_collab_parser(subparsers)
+    make_issue_parser(subparsers)
+    make_repo_parser(subparsers)
+    return parser
+
 
 def main():
-	parser = make_argument_parser()
-	args = parser.parse_args()
-	if args.func == config.do_configcmd:
-		config.do_configcmd()
-	else:
-		config.read_config_file()
-		client = Github(config.get_token())
-		args.func(client, args)
+    parser = make_argument_parser()
+    args = parser.parse_args()
+    if args.func == config.do_configcmd:
+        config.do_configcmd()
+    else:
+        config.read_config_file()
+        client = Github(config.get_token())
+        args.func(client, args)
+
 
 if __name__ == '__main__':
-	main()
+    main()
